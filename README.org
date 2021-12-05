@@ -1,0 +1,14 @@
+#+TITLE:Advent of Code in Loop
+
+This is a repo for my doomed attempts to solve AoC 2021 puzzles with ~loop~ and nothing else. By "nothing else" I mean no other big control flow or programming paradigm but ~loop~. This means:
+- No functional transformations: ~mapcar~, ~reduce~, ~remove~ etc.
+- No usual iteration: ~do~, ~dotimes~.
+- No assembly-like things: ~block~, ~tagbody~.
+- No recursive functions.
+
+All of those have their ~loop~ counterpart that should be used instead. ~if~ and similar simple control flow macros are not imposing any paradigm, and thus can be used.
+
+Defining separate functions is fine, as long as their body is either a single ~loop~ or is less than four lines.
+
+* Why?
+Well, [[https://teddit.net/r/LispMemes/comments/q9rnkb/but_does_it_have/][Loop is the original zero-cost abstraction]] and the most comprehensive iteration DSL there probably is to programming. If C ~for~ loop allows building browsers and OSes, ~loop~, with all its strength, should handle anything, right? Advent of Code is a perfect occasion to prove that.
