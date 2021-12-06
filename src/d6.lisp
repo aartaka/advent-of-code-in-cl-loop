@@ -14,17 +14,18 @@
   - As an extension: if you have lots of repeating items it's easier do split those into buckets.
 - Sometimes `psetf' is inevitable.
 - SBCL has a surprisingly small stack size, and it blows up on some two megabytes of data.
-  - \"--dynamic-space-size\" CLI argument can help with that."
+  - \"--dynamic-space-size\" CLI argument can help with that.
+- when condition sum 1 == count condition"
   (loop with fish = (lanternfish)
-        with zero = (loop for f in fish when (= 0 f) sum 1)
-        with one = (loop for f in fish when (= 1 f) sum 1)
-        with two = (loop for f in fish when (= 2 f) sum 1)
-        with three = (loop for f in fish when (= 3 f) sum 1)
-        with four = (loop for f in fish when (= 4 f) sum 1)
-        with five = (loop for f in fish when (= 5 f) sum 1)
-        with six = (loop for f in fish when (= 6 f) sum 1)
-        with seven = (loop for f in fish when (= 7 f) sum 1)
-        with eight = (loop for f in fish when (= 8 f) sum 1)
+        with zero = (loop for f in fish count (= 0 f))
+        with one = (loop for f in fish count (= 1 f))
+        with two = (loop for f in fish count (= 2 f))
+        with three = (loop for f in fish count (= 3 f))
+        with four = (loop for f in fish count (= 4 f))
+        with five = (loop for f in fish count (= 5 f))
+        with six = (loop for f in fish count (= 6 f))
+        with seven = (loop for f in fish count (= 7 f))
+        with eight = (loop for f in fish count (= 8 f))
         for day from 1 upto days
         do (psetf eight zero
                   seven eight
@@ -35,5 +36,4 @@
                   two three
                   one two
                   zero one)
-        do (list one two three four five six seven eight)
         finally (return (+ zero one two three four five six seven eight))))
