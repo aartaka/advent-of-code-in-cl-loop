@@ -11,4 +11,6 @@
                (:file "d1")
                (:file "d2")
                (:file "d3")
-               (:file "d4")))
+               (:file "d4")
+               (:file "d5")
+               (:file "d6")))
