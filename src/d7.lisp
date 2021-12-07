@@ -19,7 +19,7 @@
         finally (return (sqrt (/ sum-of-squares (1- (length list)))))))
 
 (defun sigma-fuel-function (n)
-  (loop for i upto n sum i))
+  (/ (+ (expt n 2) n) 2))
 
 (defun d7 (&optional (submarines (submarines)) (fuel-function #'identity))
   "TIL that
