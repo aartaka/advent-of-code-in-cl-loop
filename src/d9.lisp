@@ -13,8 +13,8 @@
   (loop for (xdiff ydiff) in '((0 1) (1 0) (0 -1) (-1 0))
         for x = (first point)
         for y = (second point)
-        when (and (>= (1- (length map))         (+ xdiff x) 0)
-                  (>= (1- (length (first map))) (+ ydiff y) 0))
+        when (and (<= 0 (+ xdiff x) (1- (length map)))
+                  (<= 0 (+ ydiff y) (1- (length (first map)))))
           collect (list (+ xdiff x) (+ ydiff y))))
 
 (defun low-points (map)
@@ -32,23 +32,48 @@
         for (x y) in (low-points map)
         sum (1+ (mref map x y))))
 
+(defun drain-frontier (frontier map)
+  (loop with basin = nil
+        while frontier
+        do (setf frontier
+                 (loop for f in frontier
+                       unless (null f)
+                         append (loopmove-if
+                                 (lambda (x)
+                                   (or (= 9 (mref map (first x) (second x)))
+                                       (loopind x basin)))
+                                 (neighbors f map))
+                       ;; Yes, I've given up on replacing pushnew.
+                         and do (pushnew f basin :test #'equal)))
+        finally (return basin)))
+
 (defun basins (map)
-  (loop with map = (heightmap)
+  (loop with map = map
         with low-points = (low-points map)
         with frontiers = (loopcar #'list low-points)
-        with basins = (make-list (length frontiers))
-        while frontiers
-        do (setf frontiers
-                 (loop for frontier in frontiers
-                       collect (loop for f in frontier
-                                     for b in basins
-                                     unless (null f)
-                                       collect (loopmove-if
-                                                (lambda (x)
-                                                  (or (= 9 (mref map (first x) (second x)))
-                                                      (loop for basin in basins
-                                                            when (loopind x basin)
-                                                              do (return t)
-                                                            finally (return nil))))
-                                                (neighbors f map))
-                                       and do (push f b))))))
+        with basins = (loopcar (lambda (f) (drain-frontier f map)) frontiers)
+        initially (return basins)))
+
+(defun d9-2 ()
+  "TIL that
+- `loop' imposes a C-like programming style with a
+  declarations-(iteration|condition)-return structure.
+- Array crunching is quirky to do in any language, including CL.
+
+I've been lucky with my puzzle input today, because I'm not checking
+for local optima in my solution and a good puzzle input would've
+revealed that."
+  (loop with map = (heightmap)
+        with basins = (basins map)
+        with max = 0 and second-max and third-max
+        for basin in basins
+        if (> (length basin) max)
+          do (setf third-max second-max
+                   second-max max
+                   max (length basin))
+        else if (> (length basin) second-max)
+               do (setf third-max second-max
+                        second-max (length basin))
+        else if (> (length basin) third-max)
+               do (setf third-max (length basin))
+        finally (return (* max second-max third-max))))
