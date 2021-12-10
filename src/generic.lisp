@@ -6,6 +6,9 @@
         :unless (funcall predicate l)
           :collect l))
 
+(defun loopmove (item list)
+  (loopmove-if (lambda (i) (equal i item)) list))
+
 (defun loopcar (function list)
   "A loop-based copy of `mapcar'."
   (loop :for l :in list
@@ -50,3 +53,12 @@
   (loop for e in l1
         when (loopind e l2)
           collect e))
+
+(defun loop-sort (list)
+  "A terribly ineffective and duplicate-removing sorting algo."
+  (loop while list
+        collect (loop for elem in list
+                      maximize elem into max
+                      finally (progn
+                                (setf list (loopmove max list))
+                                (return max)))))
