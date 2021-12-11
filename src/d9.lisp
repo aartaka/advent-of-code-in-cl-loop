@@ -1,15 +1,12 @@
 (in-package :aoc-in-loop)
 
 (defun heightmap ()
-  (loop for line in (uiop:read-file-lines
-                     (asdf:system-relative-pathname :aoc-in-loop "input/d9.in"))
-        collect (loop for char across line
-                      collect (- (char-code char) (char-code #\0)))))
+  (read-matrix (asdf:system-relative-pathname :aoc-in-loop "input/d9.in")))
 
 (defun mref (map x y)
   (elt (elt map x) y))
 
-(defun neighbors (point map)
+(defun 4-neighbors (point map)
   (loop for (xdiff ydiff) in '((0 1) (1 0) (0 -1) (-1 0))
         for x = (first point)
         for y = (second point)
@@ -20,7 +17,7 @@
 (defun low-points (map)
   (loop for x below (length map)
         append (loop for y below (length (first map))
-                     when (loop for neigh in (neighbors (list x y) map)
+                     when (loop for neigh in (4-neighbors (list x y) map)
                                 unless (< (mref map x y)
                                           (mref map (first neigh) (second neigh)))
                                   do (return nil)
@@ -42,7 +39,7 @@
                                  (lambda (x)
                                    (or (= 9 (mref map (first x) (second x)))
                                        (loopind x basin)))
-                                 (neighbors f map))
+                                 (4-neighbors f map))
                        ;; Yes, I've given up on replacing pushnew.
                          and do (pushnew f basin :test #'equal)))
         finally (return basin)))
