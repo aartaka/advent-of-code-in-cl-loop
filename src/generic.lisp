@@ -68,3 +68,10 @@
   (loop for line in (uiop:read-file-lines file)
         collect (loop for char across line
                       collect (funcall processing-fn char))))
+
+(defun mref (matrix x y)
+  (elt (elt matrix x) y))
+
+(defun (setf mref) (value matrix x y)
+  (setf (elt (elt matrix x) y)
+        value))

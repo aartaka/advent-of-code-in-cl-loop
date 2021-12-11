@@ -3,9 +3,6 @@
 (defun heightmap ()
   (read-matrix (asdf:system-relative-pathname :aoc-in-loop "input/d9.in")))
 
-(defun mref (map x y)
-  (elt (elt map x) y))
-
 (defun 4-neighbors (point map)
   (loop for (xdiff ydiff) in '((0 1) (1 0) (0 -1) (-1 0))
         for x = (first point)
