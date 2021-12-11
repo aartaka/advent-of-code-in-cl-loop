@@ -62,3 +62,9 @@
                       finally (progn
                                 (setf list (loopmove max list))
                                 (return max)))))
+
+(defun read-matrix (file &optional (processing-fn #'(lambda (char)
+                                                      (- (char-code char) (char-code #\0)))))
+  (loop for line in (uiop:read-file-lines file)
+        collect (loop for char across line
+                      collect (funcall processing-fn char))))
