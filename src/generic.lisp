@@ -17,7 +17,7 @@
 (defun loopind (item list)
   "A loop-based copy of `find'."
   (loop for e in list
-        when (equal item e)
+        when (equalp item e)
           do (return t)
         finally (return nil)))
 
