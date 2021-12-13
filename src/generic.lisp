@@ -75,3 +75,9 @@
 (defun (setf mref) (value matrix x y)
   (setf (elt (elt matrix x) y)
         value))
+
+(defun loopmove-duplicates (list)
+  (loop for elem in list
+        unless (loopind elem new-list)
+          collect elem into new-list
+        finally (return new-list)))
