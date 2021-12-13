@@ -56,6 +56,12 @@
 
 (export 'd13-2)
 (defun d13-2 ()
+  "TIL that:
+- Typos are the most dreadful thing in Lisp programming, after the wrong program logic.
+- Mapping list -> string (and thus printing) is quirky to do with loop.
+- Expressing the AoC problem domain in small composable functions is the best approach to AoC.
+- In addition to array processing, loop is also bad at string parsing.
+  - But c'mon, which programming construct (except for parsing combinators) is good with parsing?"
   (loop with (dots instructions) = (folding)
         with fold = dots
         for instruction in instructions
