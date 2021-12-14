@@ -10,39 +10,53 @@
                  (elt raw-rule (1- (length raw-rule))))
         finally (return (list template rules))))
 
+(defun incfhash (key table &optional (amount 1))
+  (if (gethash key table)
+      (incf (gethash key table) amount)
+      (setf (gethash key table) amount)))
+
 (defun pair-insert (&optional (steps 10))
   (loop with sequence-data = (sequences)
+        with freqs = (make-hash-table :test 'equalp)
         with sequence = (first sequence-data)
         with rules = (second sequence-data)
-        for step from 1 upto steps
-        do (setf sequence
-                 (loop for (a b . rest) on sequence
-                       append (list a (gethash (list a b) rules)) into new-seq
-                       if (null rest)
-                         collect b into new-seq
-                         and do (return new-seq)))
-        finally (return sequence)))
+        initially (loop for (a b . rest) on sequence
+                        for pair = (list a b)
+                        until (null b)
+                        do (incfhash pair freqs))
+        for step from 0 below steps
+        do (setf freqs
+                 (loop with new-freqs = (make-hash-table :test 'equalp)
+                       for pair being the hash-key of rules
+                         using (hash-value new)
+                       for first-pair = (list (first pair) new)
+                       for second-pair = (list new (second pair))
+                       when (gethash pair freqs)
+                         do (incfhash first-pair new-freqs
+                                      (gethash pair freqs))
+                         and do (incfhash second-pair new-freqs
+                                          (gethash pair freqs))
+                       finally (return new-freqs)))
+        finally (return freqs)))
 
-(defun d14-1 ()
-  (loop with ten-days-result = (pair-insert)
+(defun d14 (&optional (steps 10))
+  "TIL that:
+- Lanternfish always hits you when you don't expect it.
+- You can destructure the variables in the hash iteration `loop'.
+- The pattern of increasing the hash value is appearing so often in
+  AoC that I'm surprized no one has added such a function to any
+  utility library that I'm aware of.
+- Doing the problem using `reduce', `mapcar' &c. is almost twice as
+  short as `loop' solution, especially with `alexandria:curry' and
+  other functional idioms.
+  - Does this mean I'm giving up on doing AoC in loop? Hell no!"
+  (loop with result = (pair-insert steps)
         with freqs = (make-hash-table)
-        for char in ten-days-result
-        do (if (gethash char freqs)
-               (incf (gethash char freqs))
-               (setf (gethash char freqs) 1))
+        for (first second) being the hash-key of result
+          using (hash-value freq)
+        do (incfhash first freqs freq)
+        do (incfhash second freqs freq)
         finally (return (loop for freq being the hash-value of freqs
                               maximize freq into max
                               minimize freq into min
-                              finally (return (- max min))))))
-
-(defun d14-2 ()
-  (loop with forty-days-result = (pair-insert 40)
-        with freqs = (make-hash-table)
-        for char in forty-days-result
-        do (if (gethash char freqs)
-               (incf (gethash char freqs))
-               (setf (gethash char freqs) 1))
-        finally (return (loop for freq being the hash-value of freqs
-                              maximize freq into max
-                              minimize freq into min
-                              finally (return (- max min))))))
+                              finally (return (- (ceiling (/ max 2)) (ceiling (/ min 2))))))))
