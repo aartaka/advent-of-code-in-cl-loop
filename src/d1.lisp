@@ -7,14 +7,11 @@
 
 (export 'd1-1)
 (defun d1-1 ()
-  (loop with increasing-measurements = 0
-        with previous-measurement = nil
-        for measurement in (measurements)
-        when (and previous-measurement
-                  (> measurement previous-measurement))
-          do (incf increasing-measurements)
-        do (setf previous-measurement measurement)
-        finally (return increasing-measurements)))
+  ;; Thanks @vindarel!
+  (loop for depth in (measuments)
+        and prev = nil then depth
+        when prev
+          count (< prev depth)))
 
 (export 'd1-2)
 (defun d1-2 ()
